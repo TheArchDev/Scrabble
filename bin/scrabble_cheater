@@ -8,27 +8,27 @@ def main():
         sys.exit(1)
     rack_input = list(sys.argv[1].lower())
 
-    def valid_word(word):
+    def validate_word(word):
         # Make a copy of the rack for every new word, so we can manipulate it
         # without compromising the original rack.
         rack = rack_input[:]
+        total_score = 0
         for letter in word:
             if letter in rack:
                 rack.remove(letter)
+                total_score += scrabble.scores[letter]
+            elif rack.count('?') > 0:
+                rack.remove('?')
+                #no score to be added for blank tile
             else:
-                return False
-        return True
-
-    def get_score(word):
-        score = 0
-        for letter in word:
-            score += scrabble.scores[letter]
-        return score
+                return False, 0
+        return True, total_score
 
     answers = []
     for word in scrabble.wordlist:
-        if valid_word(word):
-            answers.append([get_score(word), word])
+        valid, score = validate_word(word)
+        if valid:
+            answers.append([score, word])
 
     answers.sort()
 
